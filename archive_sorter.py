@@ -3,32 +3,32 @@ import zipfile
 import shutil
 
 def extract_and_sort(archive_path, output_dir):
-    # Проверка и создание основной директории для результата
+    # Check if the output directory exists, create it if it doesn't
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
     
-    # Создаем временную директорию для распаковки архива
+    # Create a temporary directory for extraction
     temp_dir = os.path.join(output_dir, 'temp_extraction')
     if not os.path.exists(temp_dir):
         os.makedirs(temp_dir)
     
-    # Распаковка архива
+    # Extract the archive
     try:
         with zipfile.ZipFile(archive_path, 'r') as zip_ref:
             zip_ref.extractall(temp_dir)
-        print(f"Архив успешно распакован в {temp_dir}")
+        print(f"Archive successfully extracted to {temp_dir}")
     except Exception as e:
-        print("Ошибка при распаковке архива:", e)
+        print("Error extracting the archive:", e)
         return
 
-    # Обход всех файлов во временной директории
+    # Iterate through all files in the temporary directory
     for root, dirs, files in os.walk(temp_dir):
         for file in files:
             src_path = os.path.join(root, file)
-            # Логика сортировки: пример на основе начала имени файла
-            # Если имя файла начинается с "invoice" -> каталог "invoices"
-            # Если имя файла начинается с "report"  -> каталог "reports"
-            # Остальные файлы попадут в каталог "others"
+            # Sorting logic: example based on file name prefix
+            # If the file name starts with "invoice" -> category "invoices"
+            # If the file name starts with "report"  -> category "reports"
+            # Other files will be placed in the "others" category
             if file.lower().startswith("invoice"):
                 category = "invoices"
             elif file.lower().startswith("report"):
@@ -43,21 +43,20 @@ def extract_and_sort(archive_path, output_dir):
             dest_path = os.path.join(dest_dir, file)
             try:
                 shutil.move(src_path, dest_path)
-                print(f"Файл {file} перемещен в {category}")
+                print(f"File {file} moved to {category}")
             except Exception as e:
-                print(f"Ошибка при перемещении файла {file}: {e}")
+                print(f"Error moving file {file}:", e)
     
-    # Удаление временной директории после обработки
+    # Remove the temporary directory after processing
     try:
         shutil.rmtree(temp_dir)
-        print("Временная директория удалена.")
+        print("Temporary directory removed.")
     except Exception as e:
-        print("Ошибка при удалении временной директории:", e)
+        print("Error removing temporary directory:", e)
 
-    print("Обработка и сортировка данных завершены.")
+    print("Data extraction and sorting completed.")
 
 if __name__ == '__main__':
-    archive_path = input("Введите путь к архиву: ")
-    output_dir = input("Введите путь для сохранения отсортированных файлов: ")
+    archive_path = input("Enter the path to the archive: ")
+    output_dir = input("Enter the path to save sorted files: ")
     extract_and_sort(archive_path, output_dir)
-
